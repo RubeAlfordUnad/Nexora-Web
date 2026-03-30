@@ -282,19 +282,15 @@ function Device({ compact = false, title = "Este mes", eyebrow = "Resumen" }) {
               <p className="device-eyebrow">{eyebrow}</p>
               <h3 className="device-title">{title}</h3>
             </div>
-            <div className="device-pill">
-              <img src={logoImage} alt="Logo de Nexora" className="device-pill-logo" />
-              <span>Nexora</span>
-            </div>
           </div>
           <div className="device-metrics">
             <div className="device-metric">
               <span>Gastos</span>
-              <strong>$ 420</strong>
+              <strong>$ 42</strong>
             </div>
             <div className="device-metric">
               <span>Pendiente</span>
-              <strong>$ 180</strong>
+              <strong>$ 18</strong>
             </div>
           </div>
         </div>
@@ -304,7 +300,6 @@ function Device({ compact = false, title = "Este mes", eyebrow = "Resumen" }) {
             <ChevronRight className="h-4 w-4" />
           </div>
           {[
-            ["Supermercado", "Hoy", "-$48"],
             ["Internet", "Mañana", "-$25"],
             ["Pago deuda", "Lunes", "-$60"],
           ].map((item) => (
@@ -377,19 +372,6 @@ function Hero() {
             ))}
           </div>
 
-          <div className="hero-stats-grid">
-            {[
-              ["Registro", "En segundos"],
-              ["Pagos", "Recurrentes"],
-              ["Control", "Diario"],
-              ["Experiencia", "iPhone"],
-            ].map(([label, value]) => (
-              <Surface key={label} className="stat-card">
-                <p>{label}</p>
-                <strong>{value}</strong>
-              </Surface>
-            ))}
-          </div>
         </motion.div>
 
         <motion.div
@@ -408,6 +390,7 @@ function Hero() {
             <div className="device-right-desktop">
               <Device compact title="Pagos" eyebrow="Rutina" />
             </div>
+
           </div>
         </motion.div>
       </Container>
