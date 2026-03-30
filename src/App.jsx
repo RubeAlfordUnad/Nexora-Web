@@ -1,10 +1,12 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import logoImage from "./assets/nexora-logo.png";
 import {
   ArrowRight,
-  BadgeCheck,
   Bell,
+  CalendarClock,
+  Check,
+  ChevronDown,
   ChevronRight,
   CircleHelp,
   CreditCard,
@@ -22,9 +24,6 @@ import {
   Trash2,
   Wallet,
   X,
-  BarChart3,
-  Clock3,
-  CheckCircle2,
 } from "lucide-react";
 
 const navLinks = [
@@ -34,91 +33,126 @@ const navLinks = [
   { label: "FAQ", href: "#faq" },
 ];
 
+const bullets = [
+  "Registra gastos e ingresos en segundos.",
+  "Mantén deudas y pagos con contexto claro.",
+  "Recibe recordatorios antes del vencimiento.",
+];
+
 const features = [
   {
     icon: Wallet,
-    title: "Registro rápido de gastos e ingresos",
-    description:
-      "Captura movimientos en segundos con una experiencia limpia, rápida y pensada para uso diario.",
+    title: "Registro rápido",
+    text: "Añade movimientos sin fricción con una vista simple y pensada para el día a día.",
   },
   {
     icon: CreditCard,
-    title: "Control total de deudas",
-    description:
-      "Sigue pagos pendientes, avances y montos restantes sin depender de notas sueltas.",
+    title: "Control de deudas",
+    text: "Consulta lo pendiente, lo pagado y lo que viene con más contexto y menos ruido.",
   },
   {
     icon: Repeat,
     title: "Pagos recurrentes",
-    description:
-      "Organiza suscripciones, servicios y compromisos mensuales con una vista clara.",
+    text: "Sigue suscripciones y compromisos mensuales sin depender de memoria o notas externas.",
   },
   {
     icon: Bell,
-    title: "Recordatorios útiles",
-    description:
-      "Recibe alertas oportunas antes de que un pago se convierta en un problema.",
+    title: "Alertas oportunas",
+    text: "Recibe recordatorios antes del vencimiento y evita olvidos innecesarios.",
   },
   {
     icon: History,
-    title: "Historial detallado",
-    description:
-      "Revisa movimientos pasados y entiende mejor tus patrones financieros.",
-  },
-  {
-    icon: Download,
-    title: "Exportación de datos",
-    description:
-      "Extrae tu información cuando necesites respaldo, control o análisis adicional.",
+    title: "Historial útil",
+    text: "Revisa lo que ya pasó con una experiencia limpia y fácil de recorrer.",
   },
   {
     icon: ShieldCheck,
-    title: "Privacidad y soporte",
-    description:
-      "Acceso visible a privacidad, términos, soporte y acciones importantes de cuenta.",
-  },
-  {
-    icon: Smartphone,
-    title: "Diseñada para iPhone",
-    description:
-      "Interfaz responsiva, ligera y cómoda tanto en escritorio como en celular.",
+    title: "Privacidad visible",
+    text: "Soporte, términos y control de cuenta dentro de una experiencia más seria.",
   },
 ];
 
-const pillars = [
+const spotlightCards = [
   {
-    icon: Target,
-    title: "Menos fricción",
-    text: "Todo está pensado para registrar y consultar rápido, sin pasos innecesarios.",
+    id: "summary",
+    eyebrow: "Resumen principal",
+    title: "Empiezas entendiendo qué importa hoy.",
+    body: "Nexora concentra montos clave, actividad reciente y señales útiles para que abrir la app tenga sentido desde el primer vistazo.",
+    points: ["Gastos del mes", "Pendientes activos", "Actividad reciente"],
+    icon: LayoutDashboard,
   },
   {
-    icon: BarChart3,
-    title: "Más claridad",
-    text: "Los datos se muestran con jerarquía visual simple y fácil de entender.",
+    id: "debts",
+    eyebrow: "Seguimiento de deudas",
+    title: "Más claridad para saber qué debes y qué ya resolviste.",
+    body: "La lectura de deudas no se siente enredada. Tienes avances, estado pendiente y próximos movimientos dentro del mismo flujo.",
+    points: ["Pagos realizados", "Pendientes visibles", "Menos fricción"],
+    icon: CreditCard,
   },
   {
-    icon: Clock3,
-    title: "Mejor constancia",
-    text: "Recordatorios y pagos recurrentes ayudan a mantener orden real en el tiempo.",
+    id: "recurring",
+    eyebrow: "Pagos recurrentes",
+    title: "Recordatorios antes de que el olvido te cueste.",
+    body: "Suscripciones, servicios y pagos mensuales quedan organizados en una rutina visual que invita a revisar y actuar a tiempo.",
+    points: ["Alertas útiles", "Rutina mensual", "Más constancia"],
+    icon: CalendarClock,
   },
 ];
 
-const faqItems = [
+const details = [
+  {
+    icon: LayoutDashboard,
+    title: "Resumen financiero útil",
+    text: "Una vista general con montos importantes y actividad reciente para entender rápido cómo vas.",
+  },
+  {
+    icon: FileText,
+    title: "Historial claro",
+    text: "Consulta movimientos anteriores con una estructura más limpia y fácil de escanear.",
+  },
+  {
+    icon: Lock,
+    title: "Privacidad visible",
+    text: "La experiencia comunica mejor soporte, documentos legales y control de cuenta.",
+  },
+  {
+    icon: Trash2,
+    title: "Borrado de cuenta",
+    text: "Las acciones importantes se sienten accesibles y coherentes con una app moderna.",
+  },
+];
+
+const steps = [
+  {
+    title: "Abres y entiendes",
+    text: "La app te muestra rápido en qué estado estás y qué requiere atención.",
+  },
+  {
+    title: "Actúas antes",
+    text: "Los recordatorios y pagos recurrentes te ayudan a anticiparte, no a reaccionar tarde.",
+  },
+  {
+    title: "Mantienes orden",
+    text: "Con historial, deudas y exportación, el control no se queda en un solo momento.",
+  },
+];
+
+const faqs = [
   {
     q: "¿Qué hace diferente a Nexora?",
-    a: "Se enfoca en lo que sí importa: registrar gastos, controlar deudas, seguir pagos recurrentes y mantener una vista clara de tu actividad financiera.",
+    a: "No intenta hacer demasiadas cosas a la vez. Se enfoca en registrar, organizar, recordar y revisar con una experiencia clara.",
   },
   {
-    q: "¿Está pensada para usar todos los días?",
-    a: "Sí. La propuesta principal de Nexora es que usarla tome segundos, no minutos.",
+    q: "¿La web detecta el modo oscuro o claro del sistema?",
+    a: "Sí. El tema sigue la preferencia del sistema operativo del usuario automáticamente.",
   },
   {
-    q: "¿Puedo revisar mi historial fácilmente?",
-    a: "Sí. La app incluye vistas detalladas para revisar movimientos y entender mejor lo que ha pasado con tu dinero.",
+    q: "¿La landing sirve para la salida en App Store?",
+    a: "Sí. Está pensada para conectar privacidad, soporte, términos y el enlace oficial de descarga.",
   },
   {
-    q: "¿Incluye control de cuenta y privacidad?",
-    a: "Sí. La experiencia contempla soporte, política de privacidad, términos y gestión de cuenta desde la propia app.",
+    q: "¿La experiencia está pensada para móvil?",
+    a: "Sí. La estructura se reorganiza para celular, tablet y desktop sin depender de bloques rígidos o alturas fijas problemáticas.",
   },
 ];
 
@@ -127,135 +161,36 @@ function cn(...classes) {
 }
 
 function Container({ children, className = "" }) {
-  return (
-    <div className={cn("mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("container-shell", className)}>{children}</div>;
 }
 
 function Button({ children, href, variant = "primary", className = "", onClick }) {
-  const base =
-    "inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium transition";
-
-  const variants = {
-    primary: "bg-black text-white hover:bg-black/90",
-    secondary: "border border-black/10 bg-white text-black hover:bg-zinc-50",
-    light: "bg-white text-black hover:bg-white/90",
-    darkOutline: "border border-white/20 bg-transparent text-white hover:bg-white/10",
-  };
-
-  const finalClassName = cn(base, variants[variant] || variants.primary, className);
-
+  const classes = cn("btn", `btn-${variant}`, className);
   if (href) {
     return (
-      <a href={href} className={finalClassName}>
+      <a href={href} className={classes}>
         {children}
       </a>
     );
   }
-
   return (
-    <button onClick={onClick} className={finalClassName}>
+    <button type="button" className={classes} onClick={onClick}>
       {children}
     </button>
   );
 }
 
-function Card({ children, variant = "default", className = "" }) {
-  const variants = {
-    default: "border border-black/10 bg-white text-black shadow-sm",
-    dark: "border border-white/10 bg-black text-white shadow-sm",
-    glassDark: "border border-white/10 bg-white/5 text-white shadow-none",
-    soft: "border border-black/10 bg-zinc-50 text-black shadow-sm",
-  };
-
+function Logo() {
   return (
-    <div className={cn("rounded-[2rem]", variants[variant] || variants.default, className)}>
-      {children}
-    </div>
-  );
-}
-
-function AppLogo() {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-black shadow-sm ring-1 ring-black/10">
-        <img src={logoImage} alt="Logo de Nexora" className="h-full w-full object-cover" />
+    <div className="brand-lockup">
+      <div className="brand-logo-frame">
+        <img src={logoImage} alt="Logo de Nexora" className="brand-logo-img" />
       </div>
       <div>
-        <p className="text-2xl font-semibold tracking-tight text-black">Nexora</p>
-        <p className="text-sm text-black/45">Control financiero simple</p>
+        <p className="brand-title">Nexora</p>
+        <p className="brand-subtitle">Control financiero simple</p>
       </div>
     </div>
-  );
-}
-
-function SectionTitle({ eyebrow, title, description }) {
-  return (
-    <div className="max-w-3xl">
-      {eyebrow ? (
-        <div className="mb-3 inline-flex rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-black/60 shadow-sm">
-          {eyebrow}
-        </div>
-      ) : null}
-      <h2 className="text-3xl font-semibold tracking-tight text-black md:text-5xl">
-        {title}
-      </h2>
-      {description ? (
-        <p className="mt-4 text-base leading-7 text-black/65 md:text-lg">{description}</p>
-      ) : null}
-    </div>
-  );
-}
-
-function MobileMenu({ open, onClose }) {
-  return (
-    <AnimatePresence>
-      {open ? (
-        <>
-          <motion.div
-            className="fixed inset-0 z-50 bg-black/30 md:hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-          <motion.div
-            className="fixed right-0 top-0 z-50 h-full w-[300px] bg-white p-6 shadow-2xl md:hidden"
-            initial={{ x: 320 }}
-            animate={{ x: 0 }}
-            exit={{ x: 320 }}
-            transition={{ duration: 0.25 }}
-          >
-            <div className="mb-8 flex items-center justify-between">
-              <AppLogo />
-              <button onClick={onClose} className="rounded-2xl border border-black/10 p-2">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              {navLinks.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={onClose}
-                  className="rounded-2xl border border-black/10 px-4 py-3 text-sm text-black/75 transition hover:bg-zinc-50 hover:text-black"
-                >
-                  {item.label}
-                </a>
-              ))}
-
-              <Button className="mt-2">
-                Descargar
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </motion.div>
-        </>
-      ) : null}
-    </AnimatePresence>
   );
 }
 
@@ -264,19 +199,19 @@ function NavBar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-black/5 bg-white/80 backdrop-blur-xl">
-        <Container className="flex items-center justify-between py-4">
-          <AppLogo />
+      <header className="site-header">
+        <Container className="site-header-inner">
+          <Logo />
 
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="nav-desktop">
             {navLinks.map((item) => (
-              <a key={item.label} href={item.href} className="text-sm text-black/65 transition hover:text-black">
+              <a key={item.label} href={item.href} className="nav-link">
                 {item.label}
               </a>
             ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="nav-actions">
             <Button variant="secondary">Ver soporte</Button>
             <Button>
               Descargar
@@ -284,285 +219,535 @@ function NavBar() {
             </Button>
           </div>
 
-          <button onClick={() => setOpen(true)} className="rounded-2xl border border-black/10 p-2 md:hidden">
+          <button type="button" className="menu-button" onClick={() => setOpen(true)}>
             <Menu className="h-5 w-5" />
           </button>
         </Container>
       </header>
 
-      <MobileMenu open={open} onClose={() => setOpen(false)} />
+      <AnimatePresence>
+        {open ? (
+          <>
+            <motion.div
+              className="mobile-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+            />
+            <motion.aside
+              className="mobile-drawer"
+              initial={{ x: 320 }}
+              animate={{ x: 0 }}
+              exit={{ x: 320 }}
+              transition={{ duration: 0.22 }}
+            >
+              <div className="mobile-drawer-top">
+                <Logo />
+                <button type="button" className="menu-button" onClick={() => setOpen(false)}>
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="mobile-links">
+                {navLinks.map((item) => (
+                  <a key={item.label} href={item.href} className="mobile-link" onClick={() => setOpen(false)}>
+                    {item.label}
+                  </a>
+                ))}
+                <Button className="mt-2">
+                  Descargar
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </motion.aside>
+          </>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }
 
-function HeroPhone() {
-  return (
-    <div className="relative mx-auto w-full max-w-[320px] rounded-[2.8rem] border border-black/10 bg-black p-3 shadow-[0_30px_90px_rgba(0,0,0,0.16)]">
-      <div className="rounded-[2.2rem] bg-zinc-50 p-4">
-        <div className="mx-auto mb-4 h-1.5 w-24 rounded-full bg-black/10" />
-
-        <div className="space-y-4">
-          <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-[0.22em] text-black/45">Resumen</p>
-                <h3 className="mt-1 text-xl font-semibold text-black">Este mes</h3>
-              </div>
-              <div className="flex items-center gap-2 rounded-2xl bg-black px-3 py-2 text-sm font-semibold text-white">
-                <img src={logoImage} alt="Logo" className="h-5 w-5 rounded-md object-cover" />
-                Nexora
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl bg-zinc-100 p-3">
-                <p className="text-xs text-black/50">Gastos</p>
-                <p className="mt-1 text-lg font-semibold">$ 420</p>
-              </div>
-              <div className="rounded-2xl bg-zinc-100 p-3">
-                <p className="text-xs text-black/50">Pendiente</p>
-                <p className="mt-1 text-lg font-semibold">$ 180</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="font-medium text-black">Movimientos recientes</p>
-              <ChevronRight className="h-4 w-4 text-black/40" />
-            </div>
-
-            <div className="space-y-3">
-              {[
-                ["Supermercado", "- $ 48", "Hoy"],
-                ["Internet", "- $ 25", "Mañana"],
-                ["Pago de deuda", "- $ 60", "Lunes"],
-              ].map((item) => (
-                <div key={item[0]} className="flex items-center justify-between rounded-2xl bg-zinc-100 px-3 py-3">
-                  <div>
-                    <p className="font-medium text-black">{item[0]}</p>
-                    <p className="text-sm text-black/45">{item[2]}</p>
-                  </div>
-                  <p className="font-semibold text-black">{item[1]}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-3xl bg-black p-4 text-white">
-            <div className="flex items-center gap-3">
-              <Bell className="h-5 w-5" />
-              <div>
-                <p className="font-medium">Pago recurrente pronto</p>
-                <p className="text-sm text-white/70">Tu suscripción vence en 2 días</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+function Surface({ children, className = "" }) {
+  return <div className={cn("surface", className)}>{children}</div>;
 }
 
-function MiniPhone({ title, lines }) {
+function Device({ compact = false, title = "Este mes", eyebrow = "Resumen" }) {
   return (
-    <div className="w-full max-w-[220px] rounded-[2.4rem] border border-black/10 bg-black p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.14)]">
-      <div className="rounded-[1.9rem] bg-zinc-50 p-3">
-        <div className="mx-auto mb-3 h-1.5 w-16 rounded-full bg-black/10" />
-        <div className="rounded-3xl bg-zinc-100 p-4">
-          <div className="flex items-center gap-2">
-            <img src={logoImage} alt="Logo" className="h-7 w-7 rounded-xl object-cover shadow-sm" />
-            <p className="text-xs uppercase tracking-[0.2em] text-black/45">Nexora</p>
-          </div>
-          <h4 className="mt-3 text-lg font-semibold text-black">{title}</h4>
-          <div className="mt-4 space-y-2">
-            {lines.map((line) => (
-              <div key={line} className="rounded-2xl bg-white px-3 py-2 text-sm text-black/70 ring-1 ring-black/5">
-                {line}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AppPreviewPanel() {
-  return (
-    <div className="rounded-[2rem] border border-black/10 bg-white p-6 shadow-sm ring-1 ring-black/5">
-      <div className="mb-4 flex items-center gap-3">
-        <img src={logoImage} alt="Logo de Nexora" className="h-12 w-12 rounded-2xl object-cover shadow-sm" />
-        <div>
-          <p className="text-sm font-semibold text-black">Dashboard de Nexora</p>
-          <p className="text-sm text-black/50">Vista clara para movimientos y pendientes</p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-[1.5rem] bg-zinc-50 p-4 ring-1 ring-black/5">
-          <div className="flex items-center justify-between">
+    <div className={cn("device-frame", compact && "device-frame-compact")}>
+      <div className="device-screen">
+        <div className="device-notch" />
+        <div className="device-card">
+          <div className="device-top-row">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-black/45">Resumen general</p>
-              <h4 className="mt-1 text-2xl font-semibold text-black">Tus finanzas hoy</h4>
+              <p className="device-eyebrow">{eyebrow}</p>
+              <h3 className="device-title">{title}</h3>
             </div>
-            <span className="rounded-full bg-black px-3 py-1 text-xs font-medium text-white">En orden</span>
-          </div>
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            {[
-              ["Ingresos", "$ 2,450"],
-              ["Gastos", "$ 1,230"],
-              ["Pendiente", "$ 180"],
-            ].map(([label, value]) => (
-              <div key={label} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
-                <p className="text-sm text-black/50">{label}</p>
-                <p className="mt-2 text-xl font-semibold text-black">{value}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 rounded-3xl bg-white p-4 ring-1 ring-black/5">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="font-medium text-black">Actividad reciente</p>
-              <History className="h-4 w-4 text-black/45" />
+            <div className="device-pill">
+              <img src={logoImage} alt="Logo de Nexora" className="device-pill-logo" />
+              <span>Nexora</span>
             </div>
-            <div className="space-y-3">
-              {[
-                ["Supermercado", "- $48", "Comida"],
-                ["Netflix", "- $12", "Suscripción"],
-                ["Pago de tarjeta", "- $60", "Deuda"],
-              ].map(([name, amount, tag]) => (
-                <div key={name} className="flex items-center justify-between rounded-2xl bg-zinc-50 px-3 py-3">
-                  <div>
-                    <p className="font-medium text-black">{name}</p>
-                    <p className="text-sm text-black/45">{tag}</p>
-                  </div>
-                  <p className="font-semibold text-black">{amount}</p>
-                </div>
-              ))}
+          </div>
+          <div className="device-metrics">
+            <div className="device-metric">
+              <span>Gastos</span>
+              <strong>$ 420</strong>
+            </div>
+            <div className="device-metric">
+              <span>Pendiente</span>
+              <strong>$ 180</strong>
             </div>
           </div>
         </div>
-
-        <div className="space-y-4">
-          <div className="rounded-[1.5rem] bg-black p-4 text-white shadow-sm">
-            <div className="flex items-center gap-3">
-              <Bell className="h-5 w-5" />
-              <div>
-                <p className="font-medium">Recordatorio activo</p>
-                <p className="text-sm text-white/70">Pago recurrente en 2 días</p>
-              </div>
-            </div>
+        <div className="device-card">
+          <div className="device-row-title">
+            <span>Movimientos recientes</span>
+            <ChevronRight className="h-4 w-4" />
           </div>
-          <div className="rounded-[1.5rem] bg-white p-4 ring-1 ring-black/5">
-            <p className="text-sm text-black/50">Exportación</p>
-            <p className="mt-2 text-lg font-semibold text-black">CSV listo para descargar</p>
-          </div>
-          <div className="rounded-[1.5rem] bg-white p-4 ring-1 ring-black/5">
-            <p className="text-sm text-black/50">Privacidad</p>
-            <p className="mt-2 text-lg font-semibold text-black">Control de cuenta visible</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DarkShowcasePanel() {
-  return (
-    <div className="space-y-3">
-      {[
-        ["Menú móvil con panel lateral", "Navegación clara desde cualquier pantalla"],
-        ["CTA fijo inferior", "Descarga o soporte siempre a mano"],
-        ["Logo integrado", "Branding consistente en desktop y mobile"],
-        ["Bloques adaptados", "Nada se rompe al bajar a celular"],
-      ].map(([title, subtitle]) => (
-        <div key={title} className="rounded-3xl border border-white/10 bg-white/5 p-4">
-          <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-white p-2 text-black">
-              <CheckCircle2 className="h-4 w-4" />
-            </div>
-            <div>
-              <p className="font-medium text-white">{title}</p>
-              <p className="mt-1 text-sm text-white/65">{subtitle}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function DetailHighlightCard() {
-  return (
-    <div className="space-y-5">
-      <div className="flex items-center gap-3">
-        <img src={logoImage} alt="Logo de Nexora" className="h-14 w-14 rounded-2xl object-cover shadow-sm" />
-        <div>
-          <p className="text-sm uppercase tracking-[0.2em] text-white/45">Nexora</p>
-          <p className="text-xl font-semibold text-white">Pagos recurrentes y recordatorios</p>
-        </div>
-      </div>
-
-      <p className="leading-7 text-white/75">
-        Una de las piezas más fuertes de Nexora es ayudarte a mantener constancia. La landing resalta esa propuesta para que el visitante entienda rápido que la app no solo registra, también ayuda a sostener orden con el tiempo.
-      </p>
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        {[
-          "Alertas antes del vencimiento",
-          "Seguimiento de compromisos mensuales",
-          "Menos olvidos",
-          "Más control sobre pendientes",
-        ].map((item) => (
-          <div key={item} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80">
-            {item}
-          </div>
-        ))}
-      </div>
-
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <p className="font-medium text-white">Resumen del flujo</p>
-          <Repeat className="h-4 w-4 text-white/60" />
-        </div>
-        <div className="grid gap-3 sm:grid-cols-3">
           {[
-            ["1", "Configuras un pago"],
-            ["2", "Recibes el recordatorio"],
-            ["3", "Mantienes el control"],
-          ].map(([step, text]) => (
-            <div key={step} className="rounded-2xl bg-black/40 px-4 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-white/40">Paso {step}</p>
-              <p className="mt-2 text-sm text-white/80">{text}</p>
+            ["Supermercado", "Hoy", "-$48"],
+            ["Internet", "Mañana", "-$25"],
+            ["Pago deuda", "Lunes", "-$60"],
+          ].map((item) => (
+            <div key={item[0]} className="device-list-item">
+              <div>
+                <p>{item[0]}</p>
+                <span>{item[1]}</span>
+              </div>
+              <strong>{item[2]}</strong>
             </div>
           ))}
         </div>
+        {!compact ? (
+          <div className="device-reminder">
+            <Bell className="h-4 w-4" />
+            <div>
+              <p>Recordatorio activo</p>
+              <span>Tu suscripción vence en 2 días</span>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
 }
 
-function FeatureCard({ icon: Icon, title, description }) {
+function Hero() {
   return (
-    <Card className="h-full transition hover:-translate-y-1 hover:shadow-lg">
-      <div className="p-6">
-        <div className="mb-5 inline-flex rounded-2xl border border-black/10 bg-black px-3 py-3 text-white">
-          <Icon className="h-5 w-5" />
-        </div>
-        <h3 className="text-xl font-semibold text-black">{title}</h3>
-        <p className="mt-3 leading-7 text-black/65">{description}</p>
-      </div>
-    </Card>
+    <section className="hero-section">
+      <div className="hero-glow hero-glow-left" />
+      <div className="hero-glow hero-glow-right" />
+      <div className="hero-grid-overlay" />
+
+      <Container className="hero-layout">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="hero-copy"
+        >
+          <div className="hero-pill">
+            <Sparkles className="h-4 w-4" />
+            <span>App para iPhone con diseño limpio y control financiero claro</span>
+          </div>
+
+          <h1 className="hero-title">Control financiero que se siente claro desde el primer vistazo.</h1>
+
+          <p className="hero-text">
+            Nexora te ayuda a registrar movimientos, seguir deudas, organizar pagos recurrentes y revisar tu historial con una experiencia moderna, limpia y útil para el día a día.
+          </p>
+
+          <div className="hero-actions">
+            <Button>
+              Descargar en App Store
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button href="#features" variant="secondary">
+              Explorar funciones
+            </Button>
+          </div>
+
+          <div className="hero-bullets">
+            {bullets.map((item) => (
+              <div key={item} className="hero-bullet-item">
+                <div className="check-badge">
+                  <Check className="h-3.5 w-3.5" />
+                </div>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="hero-stats-grid">
+            {[
+              ["Registro", "En segundos"],
+              ["Pagos", "Recurrentes"],
+              ["Control", "Diario"],
+              ["Experiencia", "iPhone"],
+            ].map(([label, value]) => (
+              <Surface key={label} className="stat-card">
+                <p>{label}</p>
+                <strong>{value}</strong>
+              </Surface>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 24, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.55 }}
+          className="hero-visual-wrap"
+        >
+          <div className="hero-visual-stage">
+            <div className="device-left-desktop">
+              <Device compact title="Deudas" eyebrow="Seguimiento" />
+            </div>
+            <div className="device-main-wrap">
+              <Device title="Este mes" eyebrow="Resumen" />
+            </div>
+            <div className="device-right-desktop">
+              <Device compact title="Pagos" eyebrow="Rutina" />
+            </div>
+          </div>
+        </motion.div>
+      </Container>
+    </section>
   );
 }
 
-function StickyMobileCTA() {
+function FeatureRail() {
+  const items = [...features, ...features];
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-black/10 bg-white/90 p-3 backdrop-blur md:hidden">
-      <div className="mx-auto flex max-w-md gap-3">
-        <Button variant="secondary" className="flex-1">Soporte</Button>
+    <section className="rail-section" aria-hidden="true">
+      <div className="rail-track">
+        {items.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <div key={`${item.title}-${index}`} className="rail-pill">
+              <Icon className="h-4 w-4" />
+              <span>{item.title}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function Features() {
+  return (
+    <section id="features" className="section-block">
+      <Container>
+        <div className="section-head">
+          <div className="section-pill">Funciones principales</div>
+          <h2>Todo lo necesario para mantener orden sin que la app se vuelva pesada.</h2>
+          <p>
+            La propuesta de Nexora es simple: darte control real con una interfaz que se entiende rápido y se siente cómoda tanto en móvil como en desktop.
+          </p>
+        </div>
+
+        <div className="feature-grid">
+          {features.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Surface key={item.title} className="feature-surface">
+                <div className="feature-icon">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </Surface>
+            );
+          })}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function Showcase() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActive((current) => (current + 1) % spotlightCards.length);
+    }, 4200);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const current = spotlightCards[active];
+  const CurrentIcon = current.icon;
+
+  return (
+    <section id="showcase" className="section-block showcase-shell">
+      <Container>
+        <div className="showcase-grid">
+          <div className="showcase-copy">
+            <div className="section-pill section-pill-dark">Vista del producto</div>
+            <h2>Más dinámica, más viva y con mejor ritmo visual para quien sí quiere conocer la app.</h2>
+            <p>
+              En vez de dejar bloques muertos o alturas rígidas, esta sección cambia de forma automática, responde al usuario y mantiene el layout estable en todos los tamaños.
+            </p>
+
+            <div className="showcase-tabs">
+              {spotlightCards.map((item, index) => {
+                const Icon = item.icon;
+                const isActive = index === active;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={cn("showcase-tab", isActive && "showcase-tab-active")}
+                    onClick={() => setActive(index)}
+                  >
+                    <div className="showcase-tab-icon">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <span>{item.eyebrow}</span>
+                      <strong>{item.title}</strong>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <motion.div
+            key={current.id}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28 }}
+            className="showcase-panel"
+          >
+            <div className="showcase-panel-glow showcase-panel-glow-a" />
+            <div className="showcase-panel-glow showcase-panel-glow-b" />
+            <div className="showcase-panel-content">
+              <div>
+                <div className="section-pill section-pill-dark inline-flex">
+                  <Sparkles className="h-4 w-4" />
+                  <span>{current.eyebrow}</span>
+                </div>
+                <h3>{current.title}</h3>
+                <p>{current.body}</p>
+                <div className="showcase-points">
+                  {current.points.map((item) => (
+                    <div key={item} className="showcase-point">
+                      <Check className="h-4 w-4" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="showcase-preview">
+                <div className="preview-main">
+                  <div className="preview-main-top">
+                    <div>
+                      <p>Nexora</p>
+                      <h4>{current.eyebrow}</h4>
+                    </div>
+                    <div className="preview-icon">
+                      <CurrentIcon className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <div className="preview-lines">
+                    {current.points.map((item) => (
+                      <div key={item} className="preview-line">
+                        <span>{item}</span>
+                        <ChevronRight className="h-4 w-4" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="preview-float">
+                  <Smartphone className="h-5 w-5" />
+                  <div>
+                    <p>Interacción dinámica</p>
+                    <span>La sección cambia sola y mantiene el layout estable.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function Details() {
+  return (
+    <section id="details" className="section-block">
+      <Container>
+        <div className="details-grid">
+          <div>
+            <div className="section-pill">Cómo se siente la experiencia</div>
+            <h2 className="section-title-left">Una web moderna también tiene que explicar mejor el producto.</h2>
+            <p className="section-text-left">
+              Aquí la información está organizada en pasos y tarjetas legibles. No depende de espacios en blanco gigantes ni de composiciones que se rompen cuando cambia el ancho de pantalla.
+            </p>
+
+            <div className="steps-list">
+              {steps.map((item, index) => (
+                <div key={item.title} className="step-row">
+                  <div className="step-index">0{index + 1}</div>
+                  <Surface className="step-card">
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
+                  </Surface>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="detail-grid-cards">
+            {details.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Surface key={item.title} className="detail-surface">
+                  <div className="feature-icon feature-icon-soft">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </Surface>
+              );
+            })}
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function CTA() {
+  return (
+    <section className="section-block cta-wrap">
+      <Container>
+        <div className="cta-panel">
+          <div className="cta-glow cta-glow-a" />
+          <div className="cta-glow cta-glow-b" />
+          <div className="cta-grid">
+            <div>
+              <div className="section-pill section-pill-dark inline-flex items-center gap-2">
+                <Smartphone className="h-4 w-4" />
+                <span>Nexora para iPhone</span>
+              </div>
+              <h2>Más orden. Menos ruido. Una experiencia que sí invita a usar la app.</h2>
+              <p>
+                La web ahora acompaña mejor al producto: tiene más energía visual, mejor lectura y una base mucho más ordenada para publicar, compartir y convertir.
+              </p>
+              <div className="cta-actions">
+                <Button className="btn-light">
+                  Descargar en App Store
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button variant="darkOutline">Ver soporte</Button>
+              </div>
+            </div>
+
+            <div className="cta-mini-grid">
+              {[
+                ["Tema automático", "Claro u oscuro según el sistema"],
+                ["Responsive real", "Mejor comportamiento en laptop, tablet y móvil"],
+                ["Más dinámica", "Animaciones suaves y secciones menos rígidas"],
+                ["Lista para crecer", "Soporte, privacidad, términos y App Store"],
+              ].map(([title, text]) => (
+                <div key={title} className="cta-mini-card">
+                  <strong>{title}</strong>
+                  <p>{text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function FAQ() {
+  const [open, setOpen] = useState(0);
+  return (
+    <section id="faq" className="section-block">
+      <Container>
+        <div className="faq-grid">
+          <div>
+            <div className="section-pill">FAQ</div>
+            <h2 className="section-title-left">Respuestas claras para cerrar dudas sin llenar la web de texto pesado.</h2>
+            <p className="section-text-left">
+              El cierre de la página también debe sentirse fluido: acordeones simples, lectura limpia y sin secciones rotas en móvil.
+            </p>
+          </div>
+          <div className="faq-list">
+            {faqs.map((item, index) => (
+              <Surface key={item.q} className="faq-card">
+                <button type="button" className="faq-trigger" onClick={() => setOpen(open === index ? -1 : index)}>
+                  <div className="faq-left">
+                    <div className="feature-icon feature-icon-soft">
+                      <CircleHelp className="h-5 w-5" />
+                    </div>
+                    <span>{item.q}</span>
+                  </div>
+                  <ChevronDown className={cn("faq-chevron", open === index && "faq-chevron-open")} />
+                </button>
+                <AnimatePresence initial={false}>
+                  {open === index ? (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="faq-answer">{item.a}</div>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </Surface>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="site-footer">
+      <Container className="footer-inner">
+        <div>
+          <div className="footer-brand">
+            <img src={logoImage} alt="Logo de Nexora" className="footer-logo" />
+            <div>
+              <p className="footer-title">Nexora</p>
+              <p className="footer-subtitle">Finanzas personales simples, claras y útiles.</p>
+            </div>
+          </div>
+          <p className="footer-credit">© 2026 Nexora. Creado por Ruben Alford.</p>
+        </div>
+
+        <div className="footer-links">
+          {navLinks.map((item) => (
+            <a key={item.label} href={item.href}>
+              {item.label}
+            </a>
+          ))}
+          <a href="#">Soporte</a>
+        </div>
+      </Container>
+    </footer>
+  );
+}
+
+function MobileCTA() {
+  return (
+    <div className="mobile-cta-bar">
+      <div className="mobile-cta-inner">
+        <Button variant="secondary" className="flex-1">
+          Soporte
+        </Button>
         <Button className="flex-1">Descargar</Button>
       </div>
     </div>
@@ -571,381 +756,19 @@ function StickyMobileCTA() {
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="site-shell">
       <NavBar />
-
       <main>
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,0,0,0.07),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(0,0,0,0.05),transparent_32%)]" />
-
-          <Container className="grid gap-14 pb-16 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:pb-24 lg:pt-24">
-            <motion.div
-              initial={{ opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55 }}
-              className="relative z-10"
-            >
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-2 text-sm text-black/65 shadow-sm">
-                <Sparkles className="h-4 w-4" />
-                Landing v2 · premium, limpia y responsiva
-              </div>
-
-              <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-black sm:text-5xl lg:text-7xl">
-                La forma más clara de mostrar todo lo que hace Nexora.
-              </h1>
-
-              <p className="mt-6 max-w-2xl text-base leading-8 text-black/65 sm:text-lg lg:text-xl">
-                Una landing page moderna para una app de finanzas personales que sí se entiende rápido. Presenta gastos, deudas, pagos recurrentes, historial, privacidad y control de cuenta con una vista elegante en desktop y en celular.
-              </p>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button>
-                  Descargar en App Store
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button variant="secondary" href="#features">Ver funciones</Button>
-              </div>
-
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                {[
-                  ["Simple", "Interfaz limpia y directa"],
-                  ["Útil", "Gastos, deudas y pagos en orden"],
-                  ["Confiable", "Privacidad y control visibles"],
-                ].map(([title, body]) => (
-                  <div key={title} className="rounded-3xl border border-black/10 bg-white p-4 shadow-sm">
-                    <p className="font-semibold text-black">{title}</p>
-                    <p className="mt-1 text-sm leading-6 text-black/60">{body}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.65 }}
-              className="relative z-10 flex items-center justify-center"
-            >
-              <div className="relative w-full max-w-[680px]">
-                <div className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/5 blur-3xl" />
-                <div className="relative flex items-end justify-center gap-4 sm:gap-6">
-                  <div className="hidden sm:block">
-                    <MiniPhone title="Deudas" lines={["Pendiente actual", "Pago realizado", "Siguiente vencimiento"]} />
-                  </div>
-                  <HeroPhone />
-                  <div className="hidden sm:block">
-                    <MiniPhone title="Pagos" lines={["Recordatorio activo", "Mensualidades", "Exportación lista"]} />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </Container>
-        </section>
-
-        <section className="border-y border-black/5 bg-zinc-50">
-          <Container className="grid gap-4 py-6 md:grid-cols-2 lg:grid-cols-4">
-            {[
-              ["Gastos", "Registro rápido"],
-              ["Deudas", "Control claro"],
-              ["Recurrentes", "Alertas útiles"],
-              ["Historial", "Revisión simple"],
-            ].map(([title, subtitle]) => (
-              <div key={title} className="rounded-3xl bg-white px-5 py-4 shadow-sm ring-1 ring-black/5">
-                <p className="text-sm font-semibold text-black">{title}</p>
-                <p className="mt-1 text-sm text-black/55">{subtitle}</p>
-              </div>
-            ))}
-          </Container>
-        </section>
-
-        <section id="features">
-          <Container className="py-20 lg:py-24">
-            <SectionTitle
-              eyebrow="Funciones"
-              title="Todo lo importante, explicado con una vista simple y premium."
-              description="La página está estructurada para vender la idea rápido: qué hace Nexora, por qué importa y cómo se ve en una experiencia real de producto."
-            />
-
-            <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.45, delay: index * 0.04 }}
-                >
-                  <FeatureCard {...feature} />
-                </motion.div>
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        <section id="showcase" className="bg-zinc-50">
-          <Container className="py-20 lg:py-24">
-            <SectionTitle
-              eyebrow="Versión celular y desktop"
-              title="Una landing que se siente sólida en monitor y en pantalla pequeña."
-              description="La versión 2 mejora la jerarquía visual, el comportamiento responsivo y la navegación móvil. No es solo una web bonita; está pensada para convertir mejor y verse bien en cualquier tamaño."
-            />
-
-            <div className="mt-14 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-              <Card>
-                <div className="p-6 sm:p-8">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="rounded-2xl bg-black p-3 text-white">
-                      <LayoutDashboard className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-semibold text-black">Experiencia visual más profesional</h3>
-                      <p className="text-sm text-black/55">Mejor separación de bloques, más aire y más foco.</p>
-                    </div>
-                  </div>
-
-                  <div className="mb-6 grid gap-4 md:grid-cols-3">
-                    {pillars.map((item) => (
-                      <div key={item.title} className="rounded-3xl bg-zinc-50 p-5 ring-1 ring-black/5">
-                        <div className="inline-flex rounded-2xl bg-white p-3 ring-1 ring-black/5">
-                          <item.icon className="h-5 w-5" />
-                        </div>
-                        <h4 className="mt-4 text-lg font-semibold text-black">{item.title}</h4>
-                        <p className="mt-2 text-sm leading-6 text-black/65">{item.text}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <AppPreviewPanel />
-                </div>
-              </Card>
-
-              <Card variant="dark">
-                <div className="p-6 sm:p-8">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="rounded-2xl bg-white p-3 text-black">
-                      <Smartphone className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-semibold text-white">Mobile first de verdad</h3>
-                      <p className="text-sm text-white/60">Menú lateral, CTA fijo y bloques adaptados.</p>
-                    </div>
-                  </div>
-
-                  <DarkShowcasePanel />
-                </div>
-              </Card>
-            </div>
-          </Container>
-        </section>
-
-        <section id="details">
-          <Container className="py-20 lg:py-24">
-            <SectionTitle
-              eyebrow="Detalles"
-              title="Una página que explica bien el producto sin volverlo pesado."
-              description="Cada bloque tiene un trabajo claro: atraer, explicar, demostrar confianza y empujar a la descarga. Esa estructura te sirve tanto para publicar como para presentar Nexora a usuarios, testers o revisión de App Store."
-            />
-
-            <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-              <Card variant="dark">
-                <div className="p-7 sm:p-8">
-                  <DetailHighlightCard />
-                </div>
-              </Card>
-
-              <div className="grid gap-6 sm:grid-cols-2">
-                {[
-                  {
-                    icon: FileText,
-                    title: "Historial claro",
-                    body: "La landing comunica revisión simple y contexto rápido para entender movimientos pasados.",
-                  },
-                  {
-                    icon: Download,
-                    title: "Exportación",
-                    body: "Se destaca la posibilidad de sacar datos y mantener respaldo cuando el usuario lo necesite.",
-                  },
-                  {
-                    icon: Lock,
-                    title: "Privacidad",
-                    body: "El sitio deja visible que Nexora trata con seriedad los puntos de soporte y documentación legal.",
-                  },
-                  {
-                    icon: Trash2,
-                    title: "Borrado de cuenta",
-                    body: "Se comunica control real del usuario, algo importante para confianza y compliance.",
-                  },
-                ].map((item) => (
-                  <Card key={item.title}>
-                    <div className="p-6">
-                      <div className="inline-flex rounded-2xl bg-zinc-100 p-3 ring-1 ring-black/5">
-                        <item.icon className="h-5 w-5" />
-                      </div>
-                      <h3 className="mt-4 text-xl font-semibold text-black">{item.title}</h3>
-                      <p className="mt-3 leading-7 text-black/65">{item.body}</p>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </Container>
-        </section>
-
-        <section className="bg-zinc-50">
-          <Container className="py-20 lg:py-24">
-            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-              <SectionTitle
-                eyebrow="Confianza"
-                title="Privacidad, soporte y control del usuario bien visibles."
-                description="En una app financiera, esconder esa información es un error. La página deja claro que Nexora también cuida esa parte del producto."
-              />
-
-              <div className="grid gap-5 sm:grid-cols-2">
-                {[
-                  {
-                    icon: ShieldCheck,
-                    title: "Política de privacidad",
-                    text: "Espacio ideal para enlazar tu página legal pública y reforzar confianza.",
-                  },
-                  {
-                    icon: FileText,
-                    title: "Términos y soporte",
-                    text: "Perfecto para dirigir al usuario a contacto, ayuda y documentación base.",
-                  },
-                  {
-                    icon: Trash2,
-                    title: "Borrado de cuenta",
-                    text: "Comunica que la app permite acciones importantes sin vueltas innecesarias.",
-                  },
-                  {
-                    icon: Lock,
-                    title: "Gestión de perfil",
-                    text: "Refuerza que la cuenta y la configuración están bajo control del usuario.",
-                  },
-                ].map((item, index) => (
-                  <motion.div
-                    key={item.title}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.2 }}
-                    transition={{ duration: 0.45, delay: index * 0.05 }}
-                  >
-                    <Card className="h-full">
-                      <div className="p-6">
-                        <div className="inline-flex rounded-2xl border border-black/10 bg-zinc-100 p-3">
-                          <item.icon className="h-5 w-5" />
-                        </div>
-                        <h3 className="mt-4 text-xl font-semibold text-black">{item.title}</h3>
-                        <p className="mt-3 leading-7 text-black/65">{item.text}</p>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </Container>
-        </section>
-
-        <section className="bg-black text-white">
-          <Container className="py-20 lg:py-24">
-            <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
-              <div>
-                <div className="mb-4 flex items-center gap-3">
-                  <img src={logoImage} alt="Logo de Nexora" className="h-14 w-14 rounded-2xl object-cover shadow-sm" />
-                  <p className="text-sm uppercase tracking-[0.25em] text-white/45">Nexora</p>
-                </div>
-                <h2 className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-5xl">
-                  Una landing más seria para un producto que quiere verse listo.
-                </h2>
-                <p className="mt-5 max-w-2xl text-lg leading-8 text-white/70">
-                  Esta versión 2 sube el nivel visual, mejora la adaptación móvil y deja una base mucho más sólida para conectar tu App Store link, soporte, privacidad y capturas reales de producto.
-                </p>
-
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Button variant="light">Probar Nexora</Button>
-                  <Button variant="darkOutline" href="#details">Ver detalles</Button>
-                </div>
-              </div>
-
-              <Card variant="glassDark">
-                <div className="p-8">
-                  <div className="space-y-4">
-                    {[
-                      ["Hero más fuerte", "Mensaje más claro y visual más premium"],
-                      ["Responsive real", "Mejor comportamiento en celular"],
-                      ["Secciones útiles", "Funciones, detalles, confianza y FAQ"],
-                      ["Lista para conectar", "App Store, soporte, privacidad y screenshots"],
-                    ].map(([title, desc]) => (
-                      <div key={title} className="flex items-start gap-4 rounded-3xl border border-white/10 bg-white/5 p-4">
-                        <div className="mt-0.5 rounded-full bg-white p-1.5 text-black">
-                          <BadgeCheck className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-white">{title}</p>
-                          <p className="mt-1 text-sm leading-6 text-white/65">{desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </Container>
-        </section>
-
-        <section id="faq">
-          <Container className="py-20 lg:py-24">
-            <SectionTitle
-              eyebrow="FAQ"
-              title="Preguntas frecuentes"
-              description="La página también necesita resolver dudas sin meter bloques pesados de texto."
-            />
-
-            <div className="mt-12 grid gap-5 md:grid-cols-2">
-              {faqItems.map((item, index) => (
-                <motion.div
-                  key={item.q}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.4, delay: index * 0.04 }}
-                >
-                  <Card className="h-full">
-                    <div className="p-6">
-                      <div className="mb-3 inline-flex rounded-2xl bg-zinc-100 p-3 ring-1 ring-black/5">
-                        <CircleHelp className="h-5 w-5" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-black">{item.q}</h3>
-                      <p className="mt-3 leading-7 text-black/65">{item.a}</p>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </Container>
-        </section>
+        <Hero />
+        <FeatureRail />
+        <Features />
+        <Showcase />
+        <Details />
+        <CTA />
+        <FAQ />
       </main>
-
-      <footer className="border-t border-black/5 bg-zinc-50 pb-24 md:pb-0">
-        <Container className="flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logoImage} alt="Logo de Nexora" className="h-12 w-12 rounded-2xl object-cover shadow-sm" />
-            <div>
-              <p className="text-lg font-semibold tracking-tight text-black">Nexora</p>
-              <p className="mt-1 text-sm text-black/55">Finanzas personales simples, claras y útiles.</p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-5 text-sm text-black/55">
-            <a href="#features" className="transition hover:text-black">Funciones</a>
-            <a href="#showcase" className="transition hover:text-black">Vista</a>
-            <a href="#faq" className="transition hover:text-black">FAQ</a>
-            <a href="#" className="transition hover:text-black">Soporte</a>
-          </div>
-        </Container>
-      </footer>
-
-      <StickyMobileCTA />
+      <Footer />
+      <MobileCTA />
     </div>
   );
 }
